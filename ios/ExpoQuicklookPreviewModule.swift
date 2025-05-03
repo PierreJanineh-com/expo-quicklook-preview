@@ -1,48 +1,58 @@
 import ExpoModulesCore
+import QuickLook
 
-public class ExpoQuicklookPreviewModule: Module {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
+public class ExpoQuicklookPreviewModule: Module, QLPreviewControllerDataSource {
+  private var previewItemURL: URL?
   public func definition() -> ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ExpoQuicklookPreview')` in JavaScript.
+
     Name("ExpoQuicklookPreview")
 
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
-    Constants([
-      "PI": Double.pi
-    ])
-
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      return "Hello world! 👋"
-    }
-
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { (value: String) in
-      // Send an event to JavaScript.
-      self.sendEvent("onChange", [
-        "value": value
-      ])
-    }
-
-    // Enables the module to be used as a native view. Definition components that are accepted as part of the
-    // view definition: Prop, Events.
-    View(ExpoQuicklookPreviewView.self) {
-      // Defines a setter for the `url` prop.
-      Prop("url") { (view: ExpoQuicklookPreviewView, url: URL) in
-        if view.webView.url != url {
-          view.webView.load(URLRequest(url: url))
-        }
+    AsyncFunction("preview") { (urlString: String) in
+      guard let fileURL = URL(string: urlString),
+        fileURL.isFileURL || fileURL.scheme?.starts(with: "http") == true
+      else {
+        throw PreviewError.invalidURL
+      }
+      let finalURL: URL
+      if fileURL.isFileURL {
+        finalURL = fileURL
+      } else {
+        let data = try Data(contentsOf: fileURL)
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+          fileURL.lastPathComponent)
+        try data.write(to: tempURL)
+        finalURL = tempURL
       }
 
-      Events("onLoad")
+      previewItemURL = finalURL
+      DispatchQueue.main.async {
+        let previewController = QLPreviewController()
+        previewController.dataSource = self
+
+        guard
+          let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+          let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?
+            .rootViewController
+        else {
+          return
+        }
+
+        rootVC.present(previewController, animated: true)
+      }
     }
+  }
+
+  public func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+    return previewItemURL != nil ? 1 : 0
+  }
+
+  public func previewController(_ controller: QLPreviewController, previewItemAt index: Int)
+    -> QLPreviewItem
+  {
+    return previewItemURL! as QLPreviewItem
+  }
+
+  enum PreviewError: Error {
+    case invalidURL
   }
 }
