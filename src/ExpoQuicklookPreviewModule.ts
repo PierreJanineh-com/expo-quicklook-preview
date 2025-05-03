@@ -5,4 +5,6 @@ declare class ExpoQuicklookPreviewModule extends NativeModule {
 }
 
 // This call loads the native module object from the JSI.
-export default requireNativeModule<ExpoQuicklookPreviewModule>("ExpoQuicklookPreview");
+export default requireNativeModule<ExpoQuicklookPreviewModule>(
+  "ExpoQuicklookPreview",
+);
