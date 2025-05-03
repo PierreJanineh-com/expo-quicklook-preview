@@ -1,1 +1,1 @@
-export { default } from './ExpoQuicklookPreviewModule';
+export { default } from "./ExpoQuicklookPreviewModule";
