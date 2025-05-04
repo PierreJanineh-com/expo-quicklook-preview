@@ -1,7 +1,8 @@
 import { NativeModule, requireOptionalNativeModule } from "expo";
+import { PreviewOptions } from './types'; // Assuming you define `PreviewOptions` in a types.ts file.
 
 declare class ExpoQuicklookPreviewModule extends NativeModule {
-  preview(url: string, fileName?: string): Promise<void>;
+  preview(options: PreviewOptions): Promise<void>;
 }
 
 /**
