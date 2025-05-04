@@ -29,18 +29,22 @@ export default function App() {
         />
         <Example
           name="Single page PDF"
+          fileName="Single Page PDF.pdf"
           initialUrl="https://pdfobject.com/pdf/sample.pdf"
         />
         <Example
           name="Multi-page PDF"
+          fileName="Multi-Page PDF.pdf"
           initialUrl="https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
         />
         <Example
           name="Landscape Photo"
+          fileName="Landscape Photo.jpg"
           initialUrl="https://pierrejanineh.com/galleryImages/Food-IMG_1515-4-1920w.jpg"
         />
         <Example
           name="Portrait Photo"
+          fileName="Portrait Photo.jpg"
           initialUrl="https://pierrejanineh.com/galleryImages/Outside-IMG_1927-29-1920w.jpg"
         />
       </ScrollView>
@@ -48,11 +52,11 @@ export default function App() {
   );
 }
 
-function Example(props: { initialUrl?: string, name: string, autoFocus?: boolean }) {
+function Example(props: { initialUrl?: string, name: string, autoFocus?: boolean, fileName?: string }) {
   const [url, setUrl] = useState(props.initialUrl ?? "")
   const isUrlValid = url.startsWith("https://")
   const openPDF = async () => {
-    await ExpoQuicklookPreview?.preview(url);
+    await ExpoQuicklookPreview?.preview(url, props.fileName);
     Keyboard.dismiss()
   }
 
