@@ -1,6 +1,6 @@
 import { NativeModule, requireOptionalNativeModule } from "expo";
 
-declare class ExpoQuicklookPreviewModule extends NativeModule {
+declare class ExpoQuicklookPreview extends NativeModule {
   preview(url: string): Promise<void>;
 }
 
@@ -20,6 +20,6 @@ declare class ExpoQuicklookPreviewModule extends NativeModule {
  * ```
  */
 
-export default requireOptionalNativeModule<ExpoQuicklookPreviewModule>(
+export default requireOptionalNativeModule<ExpoQuicklookPreview>(
   "ExpoQuicklookPreview",
 );
