@@ -1,10 +1,25 @@
-import { NativeModule, requireNativeModule } from "expo";
+import { NativeModule, requireOptionalNativeModule } from "expo";
 
 declare class ExpoQuicklookPreviewModule extends NativeModule {
   preview(url: string): Promise<void>;
 }
 
-// This call loads the native module object from the JSI.
-export default requireNativeModule<ExpoQuicklookPreviewModule>(
+/**
+ * ### Platform Compatibility
+ * This module is [_currently_](https://github.com/PierreJanineh-com/expo-quicklook-preview/issues/2) only supported on iOS.
+ *
+ * On Android devices, this module will be `null`.
+ *
+ * @example
+ * ```typescript
+ * import ExpoQuicklookPreview from "expo-quicklook-preview";
+ *
+ * const url = "https://link-to-a-resource-file.jpg";
+ * // Safe to call on any platform - will no-op on Android
+ * await ExpoQuicklookPreview?.preview(url);
+ * ```
+ */
+
+export default requireOptionalNativeModule<ExpoQuicklookPreviewModule>(
   "ExpoQuicklookPreview",
 );

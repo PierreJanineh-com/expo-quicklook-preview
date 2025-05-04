@@ -51,8 +51,8 @@ export default function App() {
 function Example(props: { initialUrl?: string, name: string, autoFocus?: boolean }) {
   const [url, setUrl] = useState(props.initialUrl ?? "")
   const isUrlValid = url.startsWith("https://")
-  const openPDF = () => {
-    ExpoQuicklookPreview.preview(url);
+  const openPDF = async () => {
+    await ExpoQuicklookPreview?.preview(url);
     Keyboard.dismiss()
   }
 
