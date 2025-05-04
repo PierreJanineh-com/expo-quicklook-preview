@@ -7,7 +7,7 @@ public class ExpoQuicklookPreviewModule: Module, QLPreviewControllerDataSource {
 
     Name("ExpoQuicklookPreview")
 
-    AsyncFunction("preview") { (urlString: String) in
+    AsyncFunction("preview") { (urlString: String, fileName: String?) in
       guard let fileURL = URL(string: urlString),
         fileURL.isFileURL || fileURL.scheme?.starts(with: "http") == true
       else {
@@ -19,7 +19,7 @@ public class ExpoQuicklookPreviewModule: Module, QLPreviewControllerDataSource {
       } else {
         let data = try Data(contentsOf: fileURL)
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(
-          fileURL.lastPathComponent)
+          fileName ?? fileURL.lastPathComponent)
         try data.write(to: tempURL)
         finalURL = tempURL
       }

@@ -1,7 +1,7 @@
 import { NativeModule, requireOptionalNativeModule } from "expo";
 
 declare class ExpoQuicklookPreviewModule extends NativeModule {
-  preview(url: string): Promise<void>;
+  preview(url: string, fileName?: string): Promise<void>;
 }
 
 /**
