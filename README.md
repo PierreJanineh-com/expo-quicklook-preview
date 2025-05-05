@@ -35,14 +35,27 @@ import ExpoQuicklookPreview from "expo-quicklook-preview";
 const previewImage = async () => {
     const fileURL = "https://pierrejanineh.com/galleryImages/Food-IMG_1515-4-1920w.jpg";
   
-    await ExpoQuicklookPreview.preview({
-      url: fileURL,
-      fileName: 'Faux Wine.jpg' // Optionally, pass a file name with an extension
-    });
-  
-    // Handle user state, analytics, etc...
+    try {
+      await ExpoQuicklookPreview.preview({
+        url: fileURL,
+        fileName: 'Faux Wine.jpg' // Optionally, pass a file name with an extension
+      });
+      // Handle user state, analytics, etc...
+      
+    } catch (e) {
+      // Handle errors as needed (possible errors listed below).
+    }
 }
 ```
+
+### Error handling
+
+
+| **Cases**   | **Formatted message**                                                       |
+|-------------|----------------------------------------------------------------------------------|
+| Invalid URL | Invalid URL provided. Please ensure the URL is properly formatted and accessible. |
+| Not A File  | The provided URL does not point to a valid file.                                 |
+
 
 ### Created by
 

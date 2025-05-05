@@ -7,7 +7,7 @@ public class ExpoQuicklookPreviewModule: Module {
 	public func definition() -> ModuleDefinition {
 		Name("ExpoQuicklookPreview")
 
-		AsyncFunction("preview") { (options: [String : String]) in
+		AsyncFunction("preview") { (options: [String : Any]) in
 			let options = try PreviewOptions(options)
 
 			try previewItemURL = options.fileURL
@@ -41,21 +41,31 @@ extension ExpoQuicklookPreviewModule: QLPreviewControllerDataSource {
 	}
 }
 
-enum PreviewError: Error {
+enum PreviewError: LocalizedError {
 	case invalidURL
+	case notAFile
+
+  var errorDescription: String? {
+  switch self {
+    case .invalidURL:
+      return "Invalid URL provided. Please ensure the URL is properly formatted and accessible."
+    case .notAFile:
+      return "The provided URL does not point to a valid file."
+    }
+  }
 }
 
 struct PreviewOptions {
 	let url: String
 	let fileName: String?
 
-	init(_ options: [String : String]) throws {
-		guard let url = options["url"]
+	init(_ options: [String : Any]) throws {
+		guard let url = options["url"] as? String
 		else { throw PreviewError.invalidURL }
 		self.url = url
 
 		// Optional, no need for a guard
-		fileName = options["fileName"]
+		fileName = options["fileName"] as? String
 	}
 
 	public var fileURL: URL? {
@@ -70,10 +80,13 @@ struct PreviewOptions {
 				finalURL = fileURL
 			} else {
 				let data = try Data(contentsOf: fileURL)
+				let fileName = fileName ?? fileURL.lastPathComponent
+
+				guard !fileName.isEmpty else { throw PreviewError.notAFile }
 				let tempURL = FileManager
 					.default
 					.temporaryDirectory
-					.appendingPathComponent(fileName ?? fileURL.lastPathComponent)
+					.appendingPathComponent(fileName)
 
 				try data.write(to: tempURL)
 				finalURL = tempURL

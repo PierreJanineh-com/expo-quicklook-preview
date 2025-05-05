@@ -1,8 +1,9 @@
 import ExpoQuicklookPreview from "expo-quicklook-preview";
 import {
-  Button,
+  ActivityIndicator,
   Keyboard,
   Platform,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleProp,
@@ -23,50 +24,69 @@ export default function App() {
       <Text style={textStyles.header}>Examples</Text>
       {Platform.OS !== "ios" && <Text style={textStyles.subheader}>{UNSUPPORTED_WARN_TEXT}</Text>}
       <ScrollView style={styles.container}>
-        <Example
-          name="Enter a File URL to preview"
+        <InputGroup
+          label="Enter a File URL to preview"
           autoFocus
         />
-        <Example
-          name="Single page PDF"
+        <InputGroup
+          label="Single page PDF"
           fileName="Single Page PDF.pdf"
           initialUrl="https://pdfobject.com/pdf/sample.pdf"
         />
-        <Example
-          name="Multi-page PDF"
+        <InputGroup
+          label="Multi-page PDF"
           fileName="Multi-Page PDF.pdf"
           initialUrl="https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf"
         />
-        <Example
-          name="Landscape Photo"
-          fileName="Landscape Photo.jpg"
+        <InputGroup
+          label="Photo"
+          fileName="Faux Wine.jpg"
           initialUrl="https://pierrejanineh.com/galleryImages/Food-IMG_1515-4-1920w.jpg"
         />
-        <Example
-          name="Portrait Photo"
-          fileName="Portrait Photo.jpg"
-          initialUrl="https://pierrejanineh.com/galleryImages/Outside-IMG_1927-29-1920w.jpg"
+        <InputGroup
+          label="Intentional Error"
+          initialUrl="https://google.com"
         />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-function Example(props: { initialUrl?: string, name: string, autoFocus?: boolean, fileName?: string }) {
-  const [url, setUrl] = useState(props.initialUrl ?? "")
+interface ExampleProps {
+  label: string;
+  fileName?: string;
+  initialUrl?: string;
+  autoFocus?: boolean;
+}
+
+function InputGroup({ label, fileName, initialUrl, autoFocus }: ExampleProps) {
+  const [url, setUrl] = useState(initialUrl ?? "")
+  const [isFocused, setIsFocused] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null)
+
   const isUrlValid = url.startsWith("https://")
+
   const openPDF = async () => {
-    await ExpoQuicklookPreview?.preview({ url: url, fileName: props.fileName });
-    Keyboard.dismiss()
+    try {
+      if (loading) return;
+      setLoading(true);
+      Keyboard.dismiss()
+      await ExpoQuicklookPreview?.preview({ url, fileName });
+    } catch (e) {
+      setError(e as Error);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  const [isFocused, setIsFocused] = useState(false);
+
 
   return (
-    <Group name={props.name}>
+    <Group label={label}>
       <View style={[styles.inputContainer, isFocused && { boxShadow: `0 0 0 2px ${ACCENT_COLOR}` }]}>
         <TextInput
-          autoFocus={props.autoFocus}
+          autoFocus={autoFocus}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder="https://..."
@@ -81,21 +101,35 @@ function Example(props: { initialUrl?: string, name: string, autoFocus?: boolean
           returnKeyType="go"
           textContentType="URL"
         />
-        {isUrlValid && <Button
-            color="ACCENT_COLOR"
-            title="Go"
-            onPress={openPDF}
-        />}
+        {isUrlValid && (
+          <Pressable onPress={openPDF} style={{ margin: 'auto' }}>
+            {({ pressed }) => (
+              <Text style={[
+                textStyles.goButton,
+                pressed && { backgroundColor: `${ACCENT_COLOR}20` }
+              ]}>
+                {!loading ? "Go" : <ActivityIndicator size="small" color={ACCENT_COLOR}/>}
+              </Text>
+            )}
+
+          </Pressable>
+        )}
       </View>
+      {error?.message && <Text style={textStyles.inputError}>{error.message}</Text>}
     </Group>
   )
 }
 
-function Group(props: { name: string; children: React.ReactNode }) {
+interface GroupProps {
+  label: string;
+  children: React.ReactNode;
+}
+
+function Group({ label, children }: GroupProps) {
   return (
     <View style={styles.group}>
-      <Text style={textStyles.groupHeader}>{props.name}</Text>
-      {props.children}
+      <Text style={textStyles.groupHeader}>{label}</Text>
+      {children}
     </View>
   );
 }
@@ -118,6 +152,18 @@ const textStyles = {
     fontSize: 14,
     marginBottom: 10,
   },
+  inputError: {
+    color: "#F66",
+    fontSize: 12,
+    padding: 5,
+    marginTop: 5,
+  },
+  goButton: {
+    color: ACCENT_COLOR,
+    fontSize: 16,
+    padding: 5,
+    borderRadius: 15
+  }
 } satisfies Record<string, StyleProp<TextStyle>>;
 
 const styles = {
