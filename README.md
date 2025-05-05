@@ -35,7 +35,10 @@ import ExpoQuicklookPreview from "expo-quicklook-preview";
 const previewImage = async () => {
     const fileURL = "https://pierrejanineh.com/galleryImages/Food-IMG_1515-4-1920w.jpg";
   
-    await ExpoQuicklookPreview.preview(fileURL);
+    await ExpoQuicklookPreview.preview({
+      url: fileURL,
+      fileName: 'Faux Wine.jpg' // Optionally, pass a file name with an extension
+    });
   
     // Handle user state, analytics, etc...
 }
