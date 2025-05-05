@@ -1,4 +1,4 @@
-import ExpoQuicklookPreview from "expo-quicklook-preview";
+import { preview } from "expo-quicklook-preview";
 import {
   ActivityIndicator,
   Keyboard,
@@ -70,9 +70,10 @@ function InputGroup({ label, fileName, initialUrl, autoFocus }: ExampleProps) {
   const openPDF = async () => {
     try {
       if (loading) return;
+      setError(null);
       setLoading(true);
       Keyboard.dismiss()
-      await ExpoQuicklookPreview?.preview({ url, fileName });
+      await preview({ url, fileName });
     } catch (e) {
       setError(e as Error);
     } finally {

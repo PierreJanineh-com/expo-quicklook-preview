@@ -4,6 +4,9 @@
   "description": "Displays PDF, Images in native iOS Quicklook",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

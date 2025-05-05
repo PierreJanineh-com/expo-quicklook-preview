@@ -30,13 +30,13 @@ npx expo run:ios
 ### Use in your project
 
 ```typescript jsx
-import ExpoQuicklookPreview from "expo-quicklook-preview";
+import { preview } from "expo-quicklook-preview";
 
 const previewImage = async () => {
     const fileURL = "https://pierrejanineh.com/galleryImages/Food-IMG_1515-4-1920w.jpg";
   
     try {
-      await ExpoQuicklookPreview.preview({
+      await preview({
         url: fileURL,
         fileName: 'Faux Wine.jpg' // Optionally, pass a file name with an extension
       });
