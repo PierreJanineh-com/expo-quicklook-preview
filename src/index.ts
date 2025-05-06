@@ -2,7 +2,7 @@ import ExpoQuicklookPreview from "./ExpoQuicklookPreview";
 import { PreviewOptions } from "./types";
 
 /**
- * ##### Previews a file on iOS using Quicklook.
+ * ##### Previews a file in native iOS Quicklook.
  *
  * **Platform Compatibility:** This module is [_currently_](https://github.com/PierreJanineh-com/expo-quicklook-preview/issues/2) only works on iOS.
  * On Android devices, calling this function will do nothing.
