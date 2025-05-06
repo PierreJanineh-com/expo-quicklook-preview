@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["ExpoQuicklookPreviewModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.quicklookpreview.ExpoQuicklookPreviewModule"]
+  }
+}
